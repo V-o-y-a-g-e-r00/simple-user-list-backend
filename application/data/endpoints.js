@@ -1,0 +1,3 @@
+exports.userEnpoints = {
+  USERS: "/users",
+}
