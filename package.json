@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "serve": "node app.js",
-    "populate-user": "node populate-user.js"
+    "serve-hot-reload": "nodemon app.js"
   },
   "author": "",
   "dependencies": {
