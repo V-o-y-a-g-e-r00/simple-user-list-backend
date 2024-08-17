@@ -13,21 +13,15 @@ app.listen(PORT, () => {
   console.log("Server Listening on PORT:", PORT);
 });
 
-console.log("endpoints=", endpoints);
+// console.log("endpoints=", endpoints);
+// ;(async () => {
+//   const result = await database.query(`SELECT * FROM "user"`);
+//   console.log("result.rows=", result.rows);
+// })();
 
-database.query("SELECT * FROM users");
-
-app.get(endpoints.userEndpoints.USERS, (request, response) => {
-  const users = {
-    users: [
-      {
-        name: "user1",
-      },
-      {
-        name: "user2",
-      },
-    ],
-  };
+app.get(endpoints.userEndpoints.USERS, async (request, response) => {
+  const queryResult = await database.query(`SELECT * FROM "user"`);
+  const users = queryResult.rows;
   response.send(users);
 });
 app.get(endpoints.storageEndpoints.IMAGES, (request, responce) => {
