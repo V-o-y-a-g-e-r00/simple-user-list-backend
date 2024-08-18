@@ -22,6 +22,7 @@ app.listen(PORT, () => {
 app.get(endpoints.userEndpoints.USERS, async (request, response) => {
   const queryResult = await database.query(`SELECT * FROM "user"`);
   const users = queryResult.rows;
+  response.set({'Access-Control-Allow-Origin': '*'})
   response.send(users);
 });
 
