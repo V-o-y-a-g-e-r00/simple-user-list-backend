@@ -7,6 +7,7 @@ import { query } from "./infrastructure/database";
 
 import { join } from "path";
 import { saveFileFromBase64 } from "./common/utils";
+import path from 'path';
 
 const app = express();
 app.use(bodyParser.json({ limit: '10mb' }));
@@ -44,15 +45,17 @@ app.patch(userEndpoints.USER, (request, response) => {
   // }
 
   // console.log("userId=", userId, "base64Image=", base64Image);
-  saveFileFromBase64("test", base64Image);
+  const fileExtension = base64Image.substring("data:image/".length, base64Image.indexOf(";base64"))
+  console.log(fileExtension);
+  saveFileFromBase64(`./storage/${userId}_profile_image.${fileExtension}`, base64Image);
 
-  response.send({profile_image_uri: "test_profile_image_uri1112"});
+  response.send({profile_image_uri: `/images/${userId}_profile_image.${fileExtension}`});
 })
 
 app.get(storageEndpoints.IMAGES, (request, response) => {
   const imageId = request.params.id;
   console.log("imageId=", imageId);
-  const filePath = join(__dirname, "storage", `${imageId}`);
+  const filePath = path.resolve(`${__dirname}/../storage/${imageId}`);
 
   response.sendFile(filePath, function (error) {
       if (error) {
