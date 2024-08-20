@@ -3,9 +3,9 @@ import express from "express";
 import bodyParser from 'body-parser';
 import cors from "cors";
 import { userEndpoints, storageEndpoints } from "./data/endpoints";
-import { query } from "./infrastructure/database";
 
-import { join } from "path";
+import { UserRepository } from './infrastructure/repositories/userRepository';
+
 import { saveFileFromBase64 } from "./common/utils";
 import path from 'path';
 
@@ -26,14 +26,13 @@ app.listen(PORT, () => {
 });
 
 app.get(userEndpoints.USERS, async (request, response) => {
-  const queryResult = await query(`SELECT * FROM "user"`);
-  const users = queryResult.rows;
+  const users = await UserRepository.getUsers();
   response.send(users);
 });
 
 app.patch(userEndpoints.USER, (request, response) => {
 
-  const userId = request.params.id;
+  const userId = Number(request.params.id);
   const base64Image = request.body.profile_image;
   // const imageFormat = request.body.image_format;
   
@@ -48,8 +47,9 @@ app.patch(userEndpoints.USER, (request, response) => {
   const fileExtension = base64Image.substring("data:image/".length, base64Image.indexOf(";base64"))
   console.log(fileExtension);
   saveFileFromBase64(`./storage/${userId}_profile_image.${fileExtension}`, base64Image);
-
-  response.send({profile_image_uri: `/images/${userId}_profile_image.${fileExtension}`});
+  const profileImageUri = `/images/${userId}_profile_image.${fileExtension}`;
+  UserRepository.editUser({id: userId, profileImageUri });
+  response.send({profile_image_uri: profileImageUri });
 })
 
 app.get(storageEndpoints.IMAGES, (request, response) => {
